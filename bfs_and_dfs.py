@@ -97,7 +97,7 @@ class Solution:
             temp = open.pop(0)
             closed.append(temp)
 
-            if temp != [len(grid) - 1, len(grid[0]) - 1]: # if not goal
+            if temp != [len(grid) - 1, len(grid[-1]) - 1]: # if not goal
                 neighbors = self.getNeighbors(temp, grid)
 
                 for entry in neighbors:
@@ -118,7 +118,7 @@ class Solution:
             temp = open.pop(0)
             closed.append(temp[:2])
 
-            if temp[:2] != [len(grid) - 1, len(grid[0]) - 1]: # if not goal
+            if temp[:2] != [len(grid) - 1, len(grid[-1]) - 1]: # if not goal
                 neighbors = self.getNeighbors(temp, grid)
 
                 for entry in neighbors:
