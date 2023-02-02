@@ -66,23 +66,23 @@ class Solution:
     def getNeighbors(self, position: List[int], grid: List[List[str]]) -> List[List[int]]:
         neighbors = []
 
-        try:
-            if grid[position[0] - 1][position[1]] == "*":
+        try: # check up if available
+            if grid[position[0] - 1][position[1]] == "*" and position[0] > 0:
                 neighbors.append([position[0] - 1, position[1]])
         except: pass
 
-        try:
-            if grid[position[0] + 1][position[1]] == "*":
+        try: # check down if available
+            if grid[position[0] + 1][position[1]] == "*" and position[0] < len(grid):
                 neighbors.append([position[0] + 1, position[1]])
         except: pass
 
-        try:
-            if grid[position[0]][position[1] - 1] == "*":
+        try: # check left if available
+            if grid[position[0]][position[1] - 1] == "*" and position[1] > 0:
                 neighbors.append([position[0], position[1] - 1])
         except: pass
 
-        try:
-            if grid[position[0]][position[1] + 1] == "*":
+        try: # check right if available
+            if grid[position[0]][position[1] + 1] == "*" and position[1] < len(grid[0]):
                 neighbors.append([position[0], position[1] + 1])
         except: pass
         
@@ -104,8 +104,7 @@ class Solution:
                     if grid[entry[0]][entry[1]] == "*" and entry not in closed and entry not in open:
                         open.insert(0, entry)
 
-            else:   # if goal
-                return True
+            else: return True # if goal
 
         return False
 
@@ -126,8 +125,7 @@ class Solution:
                         entry.append(temp[2] + 1)
                         open.append(entry)
 
-            else:   # if goal
-                return temp[2]
+            else: return temp[2] # if goal
 
         return -1
 
