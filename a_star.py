@@ -21,8 +21,8 @@ Testcase 1
 
 Input:
 grid = [['*', '*', '*'],
-       ['*', '#', '#'],
-       ['*', '#', '*']]
+	   ['*', '#', '#'],
+	   ['*', '#', '*']]
 
 DFS output: False
 BFS output: -1
@@ -31,8 +31,8 @@ Testcase 2
 
 Input:
 grid = [['*', '*', '*'],
-       ['*', '#', '*'],
-       ['*', '#', '*']]
+	   ['*', '#', '*'],
+	   ['*', '#', '*']]
 
 DFS output: True
 BFS output: 4
@@ -58,15 +58,94 @@ The testcases will be randomly generated with each cell in the grid (except (0,0
 chance of being filled. (You don't have to use this 10% number to get some very specific heuristic
 which happens to work extremely well, just come up with a few heuristics and pick the best of these )
 """
-from collections import deque, heapq
-from typing import List
+from collections import deque
+import heapq
+from typing import List, Tuple
 class Solution:
-    # returns the diagonal length to the goal
-    def heuristic(self, grid: List[List[str]], coord:List[int]) -> int:
-        return ((len(grid) - coord[0]) ** 2 + (len(grid[0]) - coord[1]) ** 2) ** 0.5
-    
-    #return True if path exists from (0, 0) to (n - 1, m - 1) otherwise return False
-    def a_star(self, grid: List[List[str]]) -> bool:
-        #IMPLEMENT ME
-        pass
-    
+	# returns whether a grid point is in a given list
+	def node_in(self, list: List[List[int]], coord: List[int]):
+		for test_node in list:
+			if test_node[3:5] == coord[3:5]: return test_node
+		return False
+
+	# returns the list of valid neighbors
+	def moveGen(self, grid: List[List[str]], coord: List[int]) -> List[List[int]]:
+		neighbors = []
+
+		try: # check up if available
+			if grid[coord[3] - 1][coord[4]] == "*" and coord[3] > 0:
+				neighbors.append([coord[0], coord[1] + 1, coord[2] - 1, coord[3] - 1, coord[4], coord[3], coord[4]])
+		except: pass
+
+		try: # check down if available
+			if grid[coord[3] + 1][coord[4]] == "*" and coord[3] < len(grid):
+				neighbors.append([coord[0], coord[1] + 1, coord[2] - 1, coord[3] + 1, coord[4], coord[3], coord[4]])
+		except: pass
+
+		try: # check left if available
+			if grid[coord[3]][coord[4] - 1] == "*" and coord[4] > 0:
+				neighbors.append([coord[0], coord[1] + 1, coord[2] - 1, coord[3], coord[4] - 1, coord[3], coord[4]])
+		except: pass
+
+		try: # check right if available
+			if grid[coord[3]][coord[4] + 1] == "*" and coord[4] < len(grid[0]):
+				neighbors.append([coord[0], coord[1] + 1, coord[2] - 1, coord[3], coord[4] + 1, coord[3], coord[4]])
+		except: pass
+		
+		return neighbors
+
+	# returns the Manhattan length to the goal
+	def heuristic(self, grid: List[List[str]], coord:List[int]) -> int:
+		return abs(len(grid) - coord[0]) + abs(len(grid[0]) - coord[1])
+	
+	#return True if path exists from (0, 0) to (n - 1, m - 1) otherwise return False
+	def a_star(self, grid: List[List[str]]) -> bool:
+		open: List[List[int]] = [[int(0), int(0), int(0), int(0), int(0), int(0), int(0)]] # f(n), g(n), h(n), row, col, parent row, parent col
+		heapq.heapify(open)
+		closed = []
+
+		while len(open) > 0:
+			temp = heapq.heappop(open)
+			closed.append(temp)
+
+			if temp[3:5] == [len(grid) - 1, len(grid[0]) - 1]:
+				return True
+
+			else:
+				successors = self.moveGen(grid, list(temp))
+
+				for M in successors:
+					if self.node_in(closed, M) != False:
+						closed_node = self.node_in(closed, M)
+						if temp[1] + 1 < closed_node[1]:
+							closed_node[5:7] = temp[3:5]            # reassigning parent node
+							closed_node[1] = temp[1] + 1            # recalculating g(n)
+							closed_node[0] = sum(closed_node[1:3])	# recalculating f(n)
+
+					elif self.node_in(open, M) != False:
+						open_node = self.node_in(open, M)
+						if temp[1] + 1 < open_node[1]:
+							open_node[5:7] = temp[3:5]				# reassigning parent node
+							open_node[1] = temp[1] + 1				# recalculating g(n)
+							open_node[0] = sum(open_node[1:3])		# recalculating f(n)
+					
+					else:
+						new = [0 for i in range(7)]
+						new[2] = self.heuristic(grid, M)    		# assigning h(n)
+						new[3:5] = M[3:5]                   		# assigning row and col
+						new[5:7] = temp[3:5]                		# assigning parent row and parent col
+						new[1] = temp[1] + 1                		# assigning g(n)
+						new[0] = sum(new[1:3])              		# assigning f(n)
+						heapq.heappush(open, new)
+					
+		return False
+
+def main():
+	grid = [['*', '*', '*'],
+	   ['*', '#', '#'],
+	   ['*', '#', '*']]
+	s = Solution()
+	print(s.a_star(grid))
+
+if __name__ == "__main__":
+	main()
