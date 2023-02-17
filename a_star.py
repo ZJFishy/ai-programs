@@ -96,7 +96,7 @@ class Solution:
 
 	# returns the Manhattan length to the goal
 	def heuristic(self, grid: List[List[str]], coord:List[int]) -> int:
-		return abs(len(grid) - coord[0]) + abs(len(grid[0]) - coord[1])
+		return abs(len(grid) - 1 - coord[0]) + abs(len(grid[0]) - 1 - coord[1])
 	
 	#return True if path exists from (0, 0) to (n - 1, m - 1) otherwise return False
 	def a_star(self, grid: List[List[str]]) -> bool:
@@ -142,8 +142,8 @@ class Solution:
 
 def main():
 	grid = [['*', '*', '*'],
-	   ['*', '#', '#'],
-	   ['*', '#', '*']]
+	   		['*', '#', '#'],
+	   		['*', '#', '*']]
 	s = Solution()
 	print(s.a_star(grid))
 
